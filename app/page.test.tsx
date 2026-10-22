@@ -3,14 +3,9 @@ import { expect, test } from "vitest";
 
 import Home from "@/app/page";
 
-test("홈 화면은 시작 안내 제목과 배포 링크를 보여준다", () => {
+test("처음 방문하면 아이 정보 입력 화면을 보여준다", () => {
   render(<Home />);
 
-  expect(
-    screen.getByRole("heading", { level: 1, name: /To get started/i })
-  ).toBeInTheDocument();
-  expect(screen.getByRole("link", { name: /Deploy Now/i })).toHaveAttribute(
-    "href",
-    expect.stringContaining("vercel.com/new")
-  );
+  expect(screen.getByLabelText("아이 생년월")).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "시작하기" })).toBeDisabled();
 });
