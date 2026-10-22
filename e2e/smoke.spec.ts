@@ -7,8 +7,8 @@ test("첫 방문에서 아이 정보를 입력하면 기록하고 추천받는 �
   await expect(page).toHaveTitle("오늘의 유아식");
 
   const now = new Date();
-  const birth = `${now.getFullYear() - 2}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  await page.getByLabel("아이 생년월").fill(birth);
+  await page.getByLabel("태어난 해").selectOption(String(now.getFullYear() - 2));
+  await page.getByLabel("태어난 달").selectOption(String(now.getMonth() + 1));
   await page.getByRole("button", { name: "시작하기" }).click();
 
   await expect(

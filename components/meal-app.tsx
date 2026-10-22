@@ -35,7 +35,7 @@ import {
   type AppState,
   type Profile,
 } from "@/lib/meal-log";
-import { ageGroupOf, nutritionStatus, sumIntake } from "@/lib/nutrition";
+import { ageGroupOf, ageInMonths, describeAge, nutritionStatus, sumIntake } from "@/lib/nutrition";
 import { recommendDinner, recommendSnacks } from "@/lib/recommend";
 
 function Shell({ children }: { children: React.ReactNode }) {
@@ -122,6 +122,7 @@ function Dashboard({ state, profile }: { state: AppState; profile: Profile }) {
   const date = dateKey(today);
   const entries = state.log[date] ?? [];
   const group = ageGroupOf(profile.birth, today);
+  const birthMonths = ageInMonths(profile.birth, today);
 
   const header = (
     <header className="flex flex-wrap items-center justify-between gap-3">
@@ -143,9 +144,14 @@ function Dashboard({ state, profile }: { state: AppState; profile: Profile }) {
         {header}
         <Alert>
           <AlertTitle>이 앱은 만 1~5세 아이를 위한 거예요</AlertTitle>
-          <AlertDescription>
-            입력한 생년월은 대상 월령이 아니라서 영양 목표와 추천을 보여드릴 수
-            없어요. 아이 정보를 확인해 주세요.
+          <AlertDescription className="flex flex-col gap-3">
+            <span>
+              {birthMonths === null
+                ? "입력한 생년월을 읽을 수 없어서 영양 목표와 추천을 보여드릴 수 없어요."
+                : `입력한 생년월(${profile.birth})은 ${describeAge(birthMonths)}이라서 영양 목표와 추천을 보여드릴 수 없어요. 생후 12개월부터 만 5세까지가 대상이에요.`}
+            </span>
+            <span>생년월이 잘못 입력됐다면 아래 버튼에서 고쳐 주세요.</span>
+            <ProfileDialog profile={profile} />
           </AlertDescription>
         </Alert>
         <Disclaimer />

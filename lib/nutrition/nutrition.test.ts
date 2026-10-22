@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { findFood } from "@/lib/foods";
 
-import { ageGroupOf, nutritionStatus, sumIntake } from "./index";
+import { ageGroupOf, ageInMonths, describeAge, nutritionStatus, sumIntake } from "./index";
 
 const food = (id: string) => {
   const found = findFood(id);
@@ -21,6 +21,35 @@ describe("ageGroupOf", () => {
   it("만 1세 미만과 만 6세 이상은 대상이 아니다", () => {
     expect(ageGroupOf("2026-01", today)).toBeNull();
     expect(ageGroupOf("2020-01", today)).toBeNull();
+  });
+});
+
+describe("ageInMonths", () => {
+  const today = new Date(2026, 9, 22);
+
+  it("생년월부터 지난 개월 수를 센다", () => {
+    expect(ageInMonths("2024-10", today)).toBe(24);
+    expect(ageInMonths("2026-01", today)).toBe(9);
+  });
+
+  it("형식이 틀리거나 없는 달이면 null이다", () => {
+    expect(ageInMonths("2024.10", today)).toBeNull();
+    expect(ageInMonths("202410", today)).toBeNull();
+    expect(ageInMonths("2024-13", today)).toBeNull();
+    expect(ageInMonths("", today)).toBeNull();
+  });
+
+  it("형식이 틀리면 대상 나이도 아니다", () => {
+    expect(ageGroupOf("2024.10", today)).toBeNull();
+  });
+});
+
+describe("describeAge", () => {
+  it("개월 수를 읽기 쉬운 말로 바꾼다", () => {
+    expect(describeAge(9)).toBe("생후 9개월");
+    expect(describeAge(24)).toBe("만 2세");
+    expect(describeAge(74)).toBe("만 6세 2개월");
+    expect(describeAge(-3)).toBe("아직 태어나지 않은 날짜");
   });
 });
 

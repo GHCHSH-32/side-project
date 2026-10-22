@@ -79,15 +79,32 @@ export function targetsFor(group: AgeGroup) {
   return TARGETS[group];
 }
 
+/** 생년월(YYYY-MM)부터 오늘까지 지난 개월 수. 형식이 틀리면 null. */
+export function ageInMonths(birth: string, today: Date) {
+  const match = birth.match(/^(\d{4})-(\d{1,2})$/);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  if (month < 1 || month > 12) return null;
+  return (today.getFullYear() - year) * 12 + (today.getMonth() + 1 - month);
+}
+
 /** 생년월(YYYY-MM)로 만 나이 구간을 구한다. 대상 밖이면 null. */
 export function ageGroupOf(birth: string, today: Date): AgeGroup | null {
-  const [year, month] = birth.split("-").map(Number);
-  if (!year || !month) return null;
-  const months =
-    (today.getFullYear() - year) * 12 + (today.getMonth() + 1 - month);
+  const months = ageInMonths(birth, today);
+  if (months === null) return null;
   if (months >= 12 && months < 36) return "1-2";
   if (months >= 36 && months < 72) return "3-5";
   return null;
+}
+
+/** 개월 수를 "생후 9개월", "만 6세 2개월"처럼 읽기 쉽게 바꾼다. */
+export function describeAge(months: number) {
+  if (months < 0) return "아직 태어나지 않은 날짜";
+  if (months < 12) return `생후 ${months}개월`;
+  const years = Math.floor(months / 12);
+  const rest = months % 12;
+  return rest === 0 ? `만 ${years}세` : `만 ${years}세 ${rest}개월`;
 }
 
 export type IntakeEntry = { food: Food; pct: number };
